@@ -1,0 +1,33 @@
+<launch>
+<param name="robot_description" textfile="$(find aris_description)/robots/aris_description.urdf" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"  respawn="true">
+    <param name="publish_frequency" type="double" value="50" />
+    </node>
+    <!--<include file="$(find robot_drive)/launch/robot_joystick.launch">
+
+    </include>-->
+    <node pkg="tf" type="static_transform_publisher" name="broadcast1" args="0 0 0 0 0 0 base_footprint base_link 100"/>
+    <node pkg="tf" type="static_transform_publisher" name="broadcast2" args="0.20 0 0.23 0 0 0 base_link base_laser_link 100"/>
+    <!-- the width of two wheels -->
+    <rosparam param="base_width">0.4183</rosparam>
+    <!-- the ecorder numbers of 1 meter -->
+    <rosparam param="ticks_meter">140442</rosparam>
+
+    <!-- <node name="robot_drive" pkg="robot_drive" type="robot_drive.py" >
+        <rosparam param="port">/dev/youibot</rosparam>
+        <rosparam param="baudRate">115200</rosparam>
+    </node> -->
+
+    <node pkg="robot_drive" type="twist_to_motors.py" name="twist_to_motors" output="screen"/>
+
+    <node name="motors_to_cmds" pkg="robot_drive" type="motors_to_cmds.py" output="screen">
+      <rosparam param="rate">30</rosparam>
+    </node>
+
+    <node name="odom" pkg="robot_drive" type="diff_tf.py" output="screen">
+        <rosparam param="rate">30</rosparam>
+        <param name="base_frame_id" value="base_footprint" />
+        <param name="odom_frame_id" value="odom" />
+    </node>
+</launch>

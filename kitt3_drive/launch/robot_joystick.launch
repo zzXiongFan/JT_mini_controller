@@ -1,0 +1,14 @@
+<launch>
+    <node name="robot_joystick" pkg="kitt3_drive" type="joystick.py" >
+        <rosparam param="rate_joy">20</rosparam>
+        <!-- lmt_x和lmt_z的值一般是max_x和max_z的0.1或者0.2倍 -->
+        <rosparam param="lmt_x">0.15</rosparam>
+        <rosparam param="lmt_z">0.2</rosparam>
+        <rosparam param="max_x">1.5</rosparam>
+        <rosparam param="max_z">2.0</rosparam>
+    </node>
+
+    <node pkg="joy" type="joy_node" name="joystick" output="screen">
+        <param name="dev" value="/dev/input/js0"/>
+    </node>
+</launch>

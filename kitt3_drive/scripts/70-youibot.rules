@@ -1,0 +1,1 @@
+KERNEL=="ttyUSB[0-9]*", ACTION=="add", ATTRS{idVendor}=="1a86", MODE="0777", GROUP="dialout", SYMLINK+="youibot"

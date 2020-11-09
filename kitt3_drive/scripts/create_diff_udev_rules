@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo ""
+echo "This script copies a udev rule to /etc to facilitate bringing"
+echo "up the youibot usb connection."
+echo ""
+
+sudo cp `rospack find kitt3_drive`/scripts/70-youibot.rules /etc/udev/rules.d/
+
+echo ""
+echo "Reload rules"
+echo ""
+sudo /etc/init.d/udev restart
+
+

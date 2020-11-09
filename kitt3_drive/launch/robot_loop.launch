@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="robot_drive" type="loop.py" name="loop" output="screen">
+    </node>
+</launch>

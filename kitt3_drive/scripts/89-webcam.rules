@@ -1,0 +1,1 @@
+BUS=="usb", KERNEL=="video*", SYSFS{idProduct}=="0843", SYMLINK+="video6"
