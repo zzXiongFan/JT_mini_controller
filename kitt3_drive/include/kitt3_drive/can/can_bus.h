@@ -13,11 +13,31 @@
 #include <stdint.h>
 #include <linux/can.h>
 
+typedef struct
+{
+  /**encoders**/
+    double left_encoder;
+    double right_encoder;
+    /**转速**/
+    int left_speed; // r/min
+    int right_speed;
+    /**左右电机母线电流**/
+    int left_electric; // ma
+    int right_electric;
+    /**电池电压**/
+    int voltage;
+} robot_info;
 
 class canbus {
  public:
+  robot_info information;
+  
   canbus(const char *ifname);
   ~canbus();
+
+  void* start_thread(void *arg);
+
+  int start();
 
   // Initialize
   bool begin();
@@ -33,6 +53,10 @@ class canbus {
 
   // Set CAN filter
   bool filter(can_filter *filters, size_t nfilters);
+  //Explain the data,get ready to publish
+  void data_explain();
+  void start_read_motorinfo();
+
  private:
   template<int level>
   void canbus_log(const char *msg);
@@ -43,6 +67,7 @@ class canbus {
 
   const char *ifname;
   int can_sockfd;
+  bool is_open;
 };
 
 

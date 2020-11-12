@@ -6,25 +6,18 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/Imu.h>
 #include <motion.h>
-#include <imu.h>
+#include <can_bus.h>
 
-InfraredSerial infrared_serial;
+//InfraredSerial infrared_serial;
+canbus bus("can0");
 
 IMU imu;
-
-void velocityCallback(const std_msgs::Int16MultiArray::ConstPtr& msg)
-{
-    int left_velocity = msg->data[0];
-    int right_velocity = msg->data[1];
-    infrared_serial.uart_write(left_velocity,right_velocity);
-//    ROS_INFO("writing %d %d",left_velocity,right_velocity);
-}
 
 int main(int argc,char** argv)
 {
     ros::init(argc,argv,"mobile_base");
     ros::NodeHandle nh;
-    ros::Rate loop_rate(60);
+    ros::Rate loop_rate(100);
     /**编码器数值**/
     ros::Publisher encoder_pub = nh.advertise<std_msgs::Int32MultiArray>("/encoder_cnts",100);
     /**电池电量输出**/
@@ -35,9 +28,8 @@ int main(int argc,char** argv)
     ros::Publisher electic_pub = nh.advertise<std_msgs::Int16MultiArray>("/electic_topic",100);
     /**发布imu数据**/
     ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("/imu_data",100);
-    /**订阅速度函数**/
-    ros::Subscriber velocity_sub = nh.subscribe("left_right_wheel_speed",1000,&velocityCallback);
 
+    int resp = bus.start();
     /**主循环**/
     while (ros::ok()) {
 //        cout<<ros::Time::now().nsec<<endl;
@@ -47,13 +39,16 @@ int main(int argc,char** argv)
         encoder_msgs.data.push_back(infrared_serial.information.left_encoder);
         encoder_msgs.data.push_back(infrared_serial.information.right_encoder);
         encoder_pub.publish(encoder_msgs);
+        
         std_msgs::Float32 voltage_msgs;
         voltage_msgs.data = infrared_serial.information.voltage;
         voltage_pub.publish(voltage_msgs);
+        
         std_msgs::Int16MultiArray speed_msgs;
         speed_msgs.data.push_back(infrared_serial.information.left_speed);
         speed_msgs.data.push_back(infrared_serial.information.right_speed);
         speed_pub.publish(speed_msgs);
+        
         std_msgs::Int16MultiArray electric_msgs;
         electric_msgs.data.push_back(infrared_serial.information.left_electric);
         electric_msgs.data.push_back(infrared_serial.information.right_electric);
