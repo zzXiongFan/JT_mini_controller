@@ -19,40 +19,41 @@ int main(int argc,char** argv)
     ros::NodeHandle nh;
     ros::Rate loop_rate(100);
     /**编码器数值**/
-    ros::Publisher encoder_pub = nh.advertise<std_msgs::Int32MultiArray>("/encoder_cnts",100);
+    //ros::Publisher encoder_pub = nh.advertise<std_msgs::Int32MultiArray>("/encoder_cnts",100);
     /**电池电量输出**/
-    ros::Publisher voltage_pub = nh.advertise<std_msgs::Float32>("/battery_Topic",100);
+    ros::Publisher power_pub = nh.advertise<std_msgs::Float32>("/battery_Topic",100);
     /**电机速度 r/min**/
     ros::Publisher speed_pub = nh.advertise<std_msgs::Int16MultiArray>("/speed_wheel",100);
     /**电机的母线电流 ma**/
-    ros::Publisher electic_pub = nh.advertise<std_msgs::Int16MultiArray>("/electic_topic",100);
+    //ros::Publisher electic_pub = nh.advertise<std_msgs::Int16MultiArray>("/electic_topic",100);
     /**发布imu数据**/
     ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("/imu_data",100);
 
     int resp = bus.start();
+    
     /**主循环**/
     while (ros::ok()) {
 //        cout<<ros::Time::now().nsec<<endl;
 //        // 读取编码器
 //        information = motion.explainLine(fd,buff);
-        std_msgs::Int32MultiArray encoder_msgs;
-        encoder_msgs.data.push_back(infrared_serial.information.left_encoder);
-        encoder_msgs.data.push_back(infrared_serial.information.right_encoder);
-        encoder_pub.publish(encoder_msgs);
+        //std_msgs::Int32MultiArray encoder_msgs;
+        //encoder_msgs.data.push_back(infrared_serial.information.left_encoder);
+        //encoder_msgs.data.push_back(infrared_serial.information.right_encoder);
+        //encoder_pub.publish(encoder_msgs);
         
-        std_msgs::Float32 voltage_msgs;
-        voltage_msgs.data = infrared_serial.information.voltage;
-        voltage_pub.publish(voltage_msgs);
+        std_msgs::Float32 power_msgs;
+        power_msgs.data = bus.information.power;
+        power_pub.publish(power_msgs);
         
         std_msgs::Int16MultiArray speed_msgs;
-        speed_msgs.data.push_back(infrared_serial.information.left_speed);
-        speed_msgs.data.push_back(infrared_serial.information.right_speed);
+        speed_msgs.data.push_back(bus.information.left_speed);
+        speed_msgs.data.push_back(bus.information.right_speed);
         speed_pub.publish(speed_msgs);
         
-        std_msgs::Int16MultiArray electric_msgs;
-        electric_msgs.data.push_back(infrared_serial.information.left_electric);
-        electric_msgs.data.push_back(infrared_serial.information.right_electric);
-        electic_pub.publish(electric_msgs);
+        //std_msgs::Int16MultiArray electric_msgs;
+        //electric_msgs.data.push_back(bus.information.left_electric);
+        //electric_msgs.data.push_back(bus.information.right_electric);
+        //electic_pub.publish(electric_msgs);
         // 发布IMU
         sensor_msgs::Imu imu_msg;
         std_msgs::Header h;

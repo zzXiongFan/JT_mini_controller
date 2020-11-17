@@ -16,16 +16,16 @@
 typedef struct
 {
   /**encoders**/
-    double left_encoder;
-    double right_encoder;
+    //double left_encoder;
+    //double right_encoder;
     /**转速**/
     int left_speed; // r/min
     int right_speed;
     /**左右电机母线电流**/
-    int left_electric; // ma
-    int right_electric;
+    //int left_electric; // ma
+    //int right_electric;
     /**电池电压**/
-    int voltage;
+    int power;
 } robot_info;
 
 class canbus {

@@ -17,6 +17,8 @@
 
 
 canbus::canbus(const char *iface) : ifname(iface), can_sockfd(-1) {}
+
+
 canbus::~canbus() {
   if (can_sockfd != -1)
     close(can_sockfd);
@@ -215,9 +217,9 @@ bool canbus::check_id(uint32_t id, bool id_ext) {
 void canbus::data_explain()
 {
 
-    unsigned char data[2] = {0};
+    unsigned char data[8] = {0};
     int ret;
-    unsigned char buff[23] = {0};
+    
     unsigned char sum = 0x00;
     int left_encoder = 0;
     int right_encoder = 0;
@@ -226,82 +228,52 @@ void canbus::data_explain()
     int left_speed = 0;
     int right_speed = 0;
     int voltage = 0;
+    unsigned char power_remain = 0;
 
     while(is_open)
     {
-        sum = 0x00;
-        ret = recv(&id,1);
-        if(-1 == ret)
+        can_frame frame;
+        ret = bus->recv(&id, data, &len, &req);
+        //int ret = read(can_sockfd, &frame, sizeof(can_frame));
+        if(ret == 0)
         {
-            printf("read error \n");
-        }else if(data[0] == 0x68)
-        {
-            ret = uart_recv(data,1);
-            if(-1 == ret)
-            {
-                printf("read error \n");
-            }else if (data[0] == 0x24) {
-                ret = uart_recv(buff,23);
-                if(-1 == ret)
-                {
-                    printf("read error \n");
-                }else{
-                    for(int i=0;i<22;i++)
-                    {
-                        sum = sum + buff[i];
-                    }
-//                    printf("%x \n",sum);
-//                    printSerial(buff,23);
-                    if(sum == buff[22])
-                    {
-//                        printf("right data \n");
-                        left_encoder = buff[4] + buff[3] * 256 + buff[2]*256*256 + buff[1]*256*256*256;
-                        right_encoder = buff[9] + buff[8] * 256 + buff[7]*256*256 + buff[6]*256*256*256;
-                        if(buff[0] == 0x00)
-                        {
-                            left_encoder = - left_encoder;
-                        }
-                        if(buff[5] == 0x00)
-                        {
-                            right_encoder = - right_encoder;
-                        }
-                        left_speed = buff[12] + buff[11] * 256;
-                        right_speed = buff[15] + buff[14] * 256;
-                        if(buff[10] == 0x00)
-                        {
-                            left_speed = - left_speed;
-                        }
-                        if(buff[13] == 0x00)
-                        {
-                            right_speed = - right_speed;
-                        }
-                        left_current = buff[18] + buff[17] * 256;
-                        right_current = buff[21] + buff[20] * 256;
-                        if(buff[16] == 0x00)
-                        {
-                            left_current = - left_current;
-                        }
-                        if(buff[19] == 0x00)
-                        {
-                            right_current = - right_current;
-                        }
-                        if(first_left_encoder == 0 && first_right_encoder == 0){
-                            first_left_encoder = left_encoder;
-                            first_right_encoder = right_encoder;
-                        }
-                        information.left_encoder = left_encoder - first_left_encoder;
-                        information.right_encoder = right_encoder - first_right_encoder;
-                        information.left_electric = left_current;
-                        information.right_electric = right_current;
-                        information.left_speed = left_speed;
-                        information.right_speed = right_speed;
-//                        cout<<information.left_encoder<<" "<<information.right_encoder<<endl;
-//                        cout<<information.left_encoder<<" "<<information.right_encoder<<" "<<information.left_speed<<" "<<information.right_speed
-//                           <<" "<<information.left_electric<<" "<<information.right_electric<<endl;
-                    }
-                }
-            }
-
+          printf("read canbus null \n");
+          continue;
         }
+        else if(ret = 1)
+        {
+          if(data[1] > 128)
+          {
+            //补码的转义
+            left_speed = (256-data[1])*256 + data[0];
+            left_speed = -left_speed;
+          }
+          else
+          {
+            left_speed = data[1]*256 + data[0];
+          }
+
+          if(data[3] >128)
+          {
+            right_speed = (256-data[3])*256 + data[2];
+            right_speed = - right_speed;
+          }
+          else
+          {
+            right_speed = data[3]*256 + data[2];
+          }
+          power_remain =  data[5];
+
+          information.left_speed = left_speed;
+          information.right_speed = right_speed;
+          information.power = power_remain;          
+        }
+        else
+        {
+          printf("unknown canbus error \n");
+          break;
+        }
+        
+
     }
 }
