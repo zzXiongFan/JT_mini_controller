@@ -53,17 +53,17 @@ void Controller::produce_odom()
     float x = 0;
     float y = 0;
     /**速度**/
-    float dx = 0;
-    float dz = 0;
+    float left_vx = 0;
+    float right_vz = 0;
     /**左右两个轮子的编码器读数**/
-    long left = 0;
-    long right = 0;
+    //long left = 0;
+    //long right = 0;
 
     while(publish_odom)
     {
 
-        left = encoder_.left_encoder;
-        right = encoder_.right_encoder;
+        left_vx = encoder_.left_speed;
+        right_vz = encoder_.right_speed;
         /**系统时间精确到ms**/
         now = getTime();
 //        cout<<"now: "<<now<<endl;
@@ -71,18 +71,11 @@ void Controller::produce_odom()
         {
             elapsed = now - then;
             then = now;
-            if(enc_left == NULL && enc_right == NULL){
-                d_left = 0;
-                d_right = 0;
-                //printf("null\r\n");
-            }else{
-                d_left = (left - enc_left)/ ticks_meter ;
-                d_right = (right - enc_right)/ ticks_meter;
-            }
-            //cout << (left - enc_left) << " " << (right - enc_right) << endl;
-            enc_left = left;
-            enc_right = right;
+            left_vx = left_vx * Pi * Radius;
+            right_vz = right_vz * Pi * Radius;
             
+            d_left = left_vx * elapsed;
+            d_right = right_vz * elapsed;
             /**左右两个轮子走过的平均距离**/
             d = (d_left + d_right) / 2.0;
             /**转过的角度**/
@@ -95,8 +88,8 @@ void Controller::produce_odom()
             //printf("enc_left:%i\n",enc_right);
             //printf("base_width:%f\n",base_width);
 
-            dx = d / elapsed;
-            dz = th / elapsed;
+            //dx = d / elapsed;
+            //dz = th / elapsed;
             if(d != 0)
             {
                 float xx = cos(th) * d;
@@ -118,8 +111,8 @@ void Controller::produce_odom()
             }
             //cout << "th " << th << endl;
             //cout << "d " << d << endl;
-            pose_.dx = dx;
-            pose_.dz = dz;
+            pose_.dx = left_vx;
+            pose_.dz = right_vz;
             pose_.x = x;
             pose_.y = y;
             pose_.theta = th_add;
@@ -128,7 +121,7 @@ void Controller::produce_odom()
             //cout<<pose_.x<<" "<<pose_.y<<" ";
             //cout<<pose_.theta<<endl;
         }
-        /**睡50ms**/
+        /**睡10ms**/
         sleep(duration / 1000.0);
     }
 }

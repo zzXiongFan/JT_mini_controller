@@ -24,6 +24,9 @@
 
 using namespace std;
 
+#define Radius = 0.5;//需要更改和调试
+#define Pi = 3.1415926;
+
 class Controller
 {
 private:
@@ -49,8 +52,8 @@ private:
     }pose;
     /**结构体：编码器的值**/
     typedef struct{
-        long left_encoder;
-        long right_encoder;
+        float left_speed;
+        float right_speed;
     }encoder;
     /**两轮差速底盘的两个主动轮之间的距离**/
     float base_width;
@@ -84,7 +87,7 @@ public:
     Controller() {
         base_width = BASE_WIDTH;
         ticks_meter = TICKS_METER;
-        duration = 20;
+        duration = 10;
         enc_left = NULL;
         enc_right = NULL;
         mot.motor_left = 0;

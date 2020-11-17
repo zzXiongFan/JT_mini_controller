@@ -10,30 +10,32 @@
 
 #include <linux/can/raw.h>
 
+
+#define Radius = 0.5;//与controller里面的保持一致
+#define Pi = 3.1415926;
 //InfraredSerial infrared_serial;
 canbus bus("can0");
 
 void velocityCallback(const std_msgs::Int16MultiArray::ConstPtr& msg)
 {
-    int left_velocity = msg->data[0];
-    int right_velocity = msg->data[1];
+    short left_velocity = msg->data[0];
+    short right_velocity = msg->data[1];
+    
+    left_velocity = (left_velocity*60) /(Pi*Radius);
+    right_velocity = (left_velocity*60) /(Pi*Radius);
 
     uint8_t buf[8];
-
     buf[0] = 0x0A;
-    buf[1] = left_velocity%256;
-    buf[2] = left_velocity/256;
-    buf[3] = right_velocity%256;
-    buf[4] = right_velocity/256;
+    buf[1] = floor(left_velocity%256);
+    buf[2] = floor(left_velocity/256);
+    buf[3] = floor(right_velocity%256);
+    buf[4] = floor(right_velocity/256);
     buf[5] = 0x00;
     buf[6] = 0x00;
     buf[7] = 0x00;
 
     /*
-    一些速度转换的操作和buf设置的操作
-    uint8_t buf[8];
-    buf[0] = left_velocity;
-    buf[1] = right_velocity;
+    一些速度转换的操作和buf设置的操作,还需要测试数据是否正常，现认为默认存储为补码，直接发送即可
 
     */
     //infrared_serial.uart_write(left_velocity,right_velocity);

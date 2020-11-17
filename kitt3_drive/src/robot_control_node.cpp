@@ -21,17 +21,17 @@ int receive_cmd = 0;
 
 float x,y,z,w;
 
-void Callback(const geometry_msgs::Twist::ConstPtr& msg)
+/*void Callback(const geometry_msgs::Twist::ConstPtr& msg)
 {
     receive_cmd = 0;
     controller.twist2motor(msg->linear.x,msg->angular.z);
 //    ROS_INFO("writing %d %d",left_velocity,right_velocity);
-}
+}*/
 
-void encoderCallback(const std_msgs::Int32MultiArray::ConstPtr& msg){
+void speedCallback(const std_msgs::Int32MultiArray::ConstPtr& msg){
 //    controller.publish_odom = true;
-    controller.encoder_.left_encoder = msg->data[0];
-    controller.encoder_.right_encoder = msg->data[1];
+    controller.encoder_.left_speed = msg->data[0];
+    controller.encoder_.right_speed = msg->data[1];
 }
 
 void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -49,13 +49,13 @@ int main(int argc,char** argv)
     ros::NodeHandle nh;
     ros::Rate loop_rate(50);
     /**发布速度命令**/
-    ros::Publisher velocity_pub = nh.advertise<std_msgs::Int16MultiArray>("/left_right_wheel_speed",100);
+    //ros::Publisher velocity_pub = nh.advertise<std_msgs::Int16MultiArray>("/left_right_wheel_speed",100);
     /**发布里程计命令**/
     ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom",1000);
     /**订阅速度函数**/
-    ros::Subscriber velocity_sub = nh.subscribe("cmd_vel_mux/input/teleop",1000,&Callback);
+    //ros::Subscriber velocity_sub = nh.subscribe("cmd_vel_mux/input/teleop",1000,&Callback);//改在robot_cmd_node内部完成
     /**订阅编码器函数**/
-    ros::Subscriber encoder_sub = nh.subscribe("encoder_cnts",1000,&encoderCallback);
+    ros::Subscriber encoder_sub = nh.subscribe("speed_wheel",1000,&speedCallback);
 
     ros::Subscriber imu_sub = nh.subscribe("/imu_data",1000,&imuCallback);
     std_msgs::Int16MultiArray msg_array;
@@ -65,8 +65,8 @@ int main(int argc,char** argv)
     while(ros::ok())
     {
         ros::spinOnce();
-        /**发布速度命令**/
-        if(receive_cmd < 3){
+        /**发布速度命令,转移到robot_cmd_node**/
+        /*if(receive_cmd < 3){
             msg_array.data.clear();
             msg_array.data.push_back(controller.mot.motor_left);
             msg_array.data.push_back(controller.mot.motor_right);
@@ -81,7 +81,7 @@ int main(int argc,char** argv)
         }
         if(receive_cmd > 1000){
             receive_cmd = 100;
-        }
+        }*/
         /**发布里程计数据**/
         odom.header.stamp = ros::Time::now();
         odom.header.frame_id = "odom";
