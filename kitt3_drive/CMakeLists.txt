@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   serial
   message_generation
+  
 )
 
 add_message_files(
@@ -37,6 +38,7 @@ include_directories(
 LIST(APPEND SOURCEFILES
   src/motion.cpp
   src/controller.cpp
+  src/can_bus
   )
 
 add_library(kittMotion
@@ -48,15 +50,20 @@ add_library(kittController
 add_library(imu
   src/imu.cpp
 )
+add_library(can
+  src/can_bus.cpp
+)
 
 #add_executable(kitt3_drive_node src/robot_drive_node.cpp src/motion.cpp src/imu.cpp)
 #add_executable(kitt3_controller_node src/robot_control_node.cpp src/controller.cpp)
 add_executable(kitt3_drive_node src/robot_drive_node.cpp )
 add_executable(kitt3_controller_node src/robot_control_node.cpp )
+add_executable(kitt3_cmd_node src/robot_control_node.cpp )
 
 target_link_libraries(kitt3_drive_node
   ${PROJECT_SOURCE_DIR}/lib/libimu.so
   ${PROJECT_SOURCE_DIR}/lib/libkittMotion.so
+  ${PROJECT_SOURCE_DIR}/lib/libcan.so
   ${catkin_LIBRARIES}
 #  ${PROJECT_SOURCE_DIR}/include/robot_drive/libhello.so
 )

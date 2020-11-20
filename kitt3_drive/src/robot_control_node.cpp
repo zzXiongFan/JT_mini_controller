@@ -32,6 +32,10 @@ void speedCallback(const std_msgs::Int32MultiArray::ConstPtr& msg){
 //    controller.publish_odom = true;
     controller.encoder_.left_speed = msg->data[0];
     controller.encoder_.right_speed = msg->data[1];
+    /*
+        如果发送直线速度和转弯速度，在此处添加twist_to_motor
+    */
+
 }
 
 void imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
@@ -47,7 +51,7 @@ int main(int argc,char** argv)
 {
     ros::init(argc,argv,"controller_base");
     ros::NodeHandle nh;
-    ros::Rate loop_rate(50);
+    ros::Rate loop_rate(100);//looprate 要和 produce odom中的duration基本一致
     /**发布速度命令**/
     //ros::Publisher velocity_pub = nh.advertise<std_msgs::Int16MultiArray>("/left_right_wheel_speed",100);
     /**发布里程计命令**/
