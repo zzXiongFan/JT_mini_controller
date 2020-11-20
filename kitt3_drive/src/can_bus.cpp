@@ -29,7 +29,7 @@ void* canbus::start_thread(void *arg)
 {
     canbus *ptr = (canbus *)arg;
     //ptr->begin();
-    if(!(prt->begin())){
+    if(!ptr->begin()){
         printf("canbus begin failed");
         //return 1;
     }
@@ -233,7 +233,7 @@ void canbus::data_explain()
     while(is_open)
     {
         can_frame frame;
-        ret = bus->recv(&id, data, &len, &req);
+        ret = ptr->recv(&id, data, &len, &req);
         //int ret = read(can_sockfd, &frame, sizeof(can_frame));
         if(ret == 0)
         {

@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #include <linux/can.h>
+#include <pthread.h>
 
 typedef struct
 {
@@ -35,7 +36,7 @@ class canbus {
   canbus(const char *ifname);
   ~canbus();
 
-  void* start_thread(void *arg);
+  //void* start_thread(void *arg);
 
   int start();
 
@@ -68,6 +69,8 @@ class canbus {
   const char *ifname;
   int can_sockfd;
   bool is_open;
+  pthread_t pid;
+  static void * start_thread(void* arg);
 };
 
 
