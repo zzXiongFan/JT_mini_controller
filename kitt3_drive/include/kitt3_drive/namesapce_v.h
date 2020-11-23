@@ -22,11 +22,11 @@
 // BMS2的串口名称
 #define BMS2_DEV "/dev/ttyS1"
 // 两个驱动轮之间的宽度m
-#define BASE_WIDTH 0.49943
+//#define BASE_WIDTH 0.49943
 // 圆周率
 #define PI 3.1415926
 // 轮子转动一圈的脉冲数
-#define TICKS_METER 509467.f //522558.9 //509423 //529899.6 
+//#define TICKS_METER 509467.f //522558.9 //509423 //529899.6 
 // 摄像头图像的宽度
 #define IMAGEWIDTH 640
 // 摄像头图像的高度
@@ -36,7 +36,7 @@
 // 摄像头图像是否显示（opencv）
 #define ISSHOW 1
 // odom话题发布的消息是否具有IMU消息
-#define ODOM_USE_IMU 0
+//#define ODOM_USE_IMU 0
 // 轮子直径 mm
 #define DIAMETER 125
 // 电机减速比

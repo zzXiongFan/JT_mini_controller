@@ -7,6 +7,7 @@
 #include <sensor_msgs/Imu.h>
 #include <motion.h>
 #include <can_bus.h>
+#include <imu.h>
 
 //InfraredSerial infrared_serial;
 canbus bus("can0");
@@ -79,11 +80,11 @@ int main(int argc,char** argv)
 //        cout<<imu.imu_.roll<<" "<<imu.imu_.pitch<<" "<<imu.imu_.yaw<<endl;
 
         imu_pub.publish(imu_msg);
-
+    
         ros::spinOnce();
         loop_rate.sleep();
     }
-    infrared_serial.closeUart();
+    //infrared_serial.closeUart();
     imu.closeUart();
     return 0;
 }

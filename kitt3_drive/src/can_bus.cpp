@@ -33,7 +33,7 @@ void* canbus::start_thread(void *arg)
         printf("canbus begin failed");
         //return 1;
     }
-    ptr->data_explain();
+    ptr->data_explain(ptr);
 }
 
 int canbus::start()
@@ -214,7 +214,7 @@ bool canbus::check_id(uint32_t id, bool id_ext) {
   }
 }
 
-void canbus::data_explain()
+void canbus::data_explain(canbus *can_ptr)
 {
 
     unsigned char data[8] = {0};
@@ -229,11 +229,15 @@ void canbus::data_explain()
     int right_speed = 0;
     int voltage = 0;
     unsigned char power_remain = 0;
+    uint32_t id;
+
+    uint8_t len;
+    bool req;
 
     while(is_open)
     {
         can_frame frame;
-        ret = ptr->recv(&id, data, &len, &req);
+        ret = can_ptr->recv(&id, data, &len, &req);
         //int ret = read(can_sockfd, &frame, sizeof(can_frame));
         if(ret == 0)
         {

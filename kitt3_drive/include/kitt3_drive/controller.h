@@ -24,8 +24,8 @@
 
 using namespace std;
 
-#define Radius = 0.5;//需要更改和调试
-#define Pi = 3.1415926;
+#define Radius  0.5  //需要更改和调试
+#define Pi  3.1415926
 
 class Controller
 {
@@ -73,8 +73,8 @@ public:
     pose pose_;
     bool publish_odom;
 
-    long enc_left;
-    long enc_right;
+    //long enc_left;
+    //long enc_right;
 
     int t_next;
     long now;
@@ -88,12 +88,12 @@ public:
         base_width = BASE_WIDTH;
         ticks_meter = TICKS_METER;
         duration = 10;
-        enc_left = NULL;
-        enc_right = NULL;
+        //enc_left = NULL;
+        //enc_right = NULL;
         mot.motor_left = 0;
         mot.motor_left = 0;
-        encoder_.left_encoder = 0;
-        encoder_.right_encoder = 0;
+        encoder_.left_speed = 0;
+        encoder_.right_speed = 0;
         pose_.x = 0;
         pose_.y = 0;
         pose_.theta = 0;

@@ -55,7 +55,7 @@ class canbus {
   // Set CAN filter
   bool filter(can_filter *filters, size_t nfilters);
   //Explain the data,get ready to publish
-  void data_explain();
+  void data_explain(canbus *can_ptr);
   void start_read_motorinfo();
 
  private:
