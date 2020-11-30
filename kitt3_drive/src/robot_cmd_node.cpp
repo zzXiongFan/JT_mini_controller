@@ -23,7 +23,7 @@ void velocityCallback(const std_msgs::Int16MultiArray::ConstPtr& msg)
     
     left_velocity = (left_velocity*60) /(Pi*Radius);
     right_velocity = (left_velocity*60) /(Pi*Radius);
-
+//添加停止确认模块
     uint8_t buf[8];
     buf[0] = 0x0A;
     buf[1] = floor(left_velocity%256);

@@ -14,7 +14,7 @@
 
 #include "can_bus.h"
 
-
+#define CAN_SFF_MASK 0x000007FFU
 
 canbus::canbus(const char *iface) : ifname(iface), can_sockfd(-1) {}
 
@@ -175,6 +175,10 @@ bool canbus::filter(can_filter *filters, size_t nfilters) {
 
 bool canbus::recv(uint32_t *id, uint8_t *data, uint8_t *len, bool *remote_req, bool *id_ext) {
   can_frame frame;
+  struct can_filter rfilter[1];
+  rfilter[0].can_id = 0x308;
+  rfilter[0].can_mask = CAN_SFF_MASK;
+  setsockopt(can_sockfd, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
   int ret = read(can_sockfd, &frame, sizeof(can_frame));
   if (ret < 0) {
     canbus_errno("read failed");
@@ -191,7 +195,7 @@ bool canbus::recv(uint32_t *id, uint8_t *data, uint8_t *len, bool *remote_req, b
   if (id != NULL)
     *id = frame.can_id & CAN_ERR_MASK;
 
-  if (!req && data != NULL)
+  if (!req && data != NULL && frame.can_id)
     memcpy(data, frame.data, frame.can_dlc);
 
   if (len != NULL)
@@ -229,7 +233,7 @@ void canbus::data_explain(canbus *can_ptr)
     int right_speed = 0;
     int voltage = 0;
     unsigned char power_remain = 0;
-    uint32_t id;
+    uint32_t id = 0x308;
 
     uint8_t len;
     bool req;
