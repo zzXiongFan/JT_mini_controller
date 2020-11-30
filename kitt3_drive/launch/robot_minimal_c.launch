@@ -5,7 +5,7 @@
    <node pkg="robot_state_publisher" type="robot_state_publisher"   name="robot_state_publisher" respawn="true">
     <param name="publish_frequency" type="double" value="50" />
    </node>
-   <include file="$(find youibot_joystick)/launch/youibot_joystick.launch" />
+     <!-- <include file="$(find youibot_joystick)/launch/youibot_joystick.launch" />-->
     <!-- <include file="$(find kitt3_drive)/launch/robot_joystick.launch" /> -->
     <node pkg="tf" type="static_transform_publisher" name="broadcast1" args="0 0 0 0 0 0 base_footprint base_link 100"/>
 
@@ -13,6 +13,7 @@
 
     <node name="robot_controller" pkg="kitt3_drive" type="kitt3_controller_node" output="screen" />
 
+    <node name="robot_cmd" pkg="kitt3_drive" type="kitt3_cmd_node" output="screen" />
     <!-- <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf" >
         <param name="output_frame" value="odom_combined"/>
         <param name="freq" value="30.0"/>
@@ -23,8 +24,8 @@
         <remap from="/robot_pose_ekf/odom_combined" to="/odom_combined"/>
     </node> -->
 
-    <node name="pose_to_odom" pkg="kitt3_drive" type="pose_to_odom.py" output="screen" />
-    <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+    <!--<node name="pose_to_odom" pkg="kitt3_drive" type="pose_to_odom.py" output="screen" />
+    <include file="$(find rplidar_ros)/launch/rplidar.launch" />-->
 
 </launch>
 
