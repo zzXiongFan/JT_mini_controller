@@ -28,7 +28,7 @@ float x,y,z,w;
 //    ROS_INFO("writing %d %d",left_velocity,right_velocity);
 }*/
 
-void speedCallback(const std_msgs::Int32MultiArray::ConstPtr& msg){
+void speedCallback(const std_msgs::Int16MultiArray::ConstPtr& msg){
 //    controller.publish_odom = true;
     controller.encoder_.left_speed = msg->data[0];
     controller.encoder_.right_speed = msg->data[1];
