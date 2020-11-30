@@ -248,12 +248,12 @@ void canbus::data_explain(canbus *can_ptr)
           printf("read canbus null \n");
           continue;
         }
-        else if(ret == 1 && id == 0x308)
+        else if(ret == 1)
         {
           if(data[1] > 128)
           {
             //补码的转义
-            left_speed = (256-data[1])*256 + data[0];
+            left_speed = (255-data[1])*256 + (256-data[0]);
             left_speed = -left_speed;
           }
           else
@@ -263,7 +263,7 @@ void canbus::data_explain(canbus *can_ptr)
 
           if(data[3] >128)
           {
-            right_speed = (256-data[3])*256 + data[2];
+            right_speed = (255-data[3])*256 + (256-data[2]);
             right_speed = - right_speed;
           }
           else
