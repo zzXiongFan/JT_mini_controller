@@ -26,6 +26,7 @@ void velocityCallback(const std_msgs::Int16MultiArray::ConstPtr& msg)
     }
     else
     {
+        left_velocity = (left_velocity*60) /(Pi*Radius);
         left_velocity = 65536 + left_velocity;
     }
     
@@ -36,6 +37,7 @@ void velocityCallback(const std_msgs::Int16MultiArray::ConstPtr& msg)
     }
     else
     {
+        right_velocity = (right_velocity*60) /(Pi*Radius);
         right_velocity = 65536 + right_velocity;
     }
 
