@@ -68,7 +68,7 @@ public:
      * @param data     串口数据buffer
      * @param len      buffer的长度
      */
-    void printSerial(int8 *data, int8 len);
+    void printSerial(uint8_t *data, int8 len);
     /**
      * @brief 将航向角清零
      *

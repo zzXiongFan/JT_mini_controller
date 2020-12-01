@@ -159,7 +159,7 @@ void IMU::explain_line()
                     }
                 }
                 //sum = sum + rx_header[0];
-                sum = 0xFF - sum
+                sum = 0xFF - sum;
                 if(sum == rx_buffer[20])
                 {
 //                    printSerial(rx_buffer,30);
