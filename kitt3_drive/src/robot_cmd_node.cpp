@@ -16,6 +16,13 @@
 //InfraredSerial infrared_serial;
 canbus bus("can0");
 
+void Callback(const geometry_msgs::Twist::ConstPtr& msg)
+{
+    receive_cmd = 0;
+    controller.twist2motor(msg->linear.x,msg->angular.z);
+//    ROS_INFO("writing %d %d",left_velocity,right_velocity);
+}
+
 void velocityCallback(const std_msgs::Int16MultiArray::ConstPtr& msg)
 {
     short left_velocity = msg->data[0];
@@ -81,7 +88,7 @@ int main(int argc,char** argv)
     }
     /**订阅速度函数**/ 
     ros::Subscriber velocity_sub = nh.subscribe("left_right_wheel_speed",1000,&velocityCallback);
-
+    ros::Subscriber velocity_sub = nh.subscribe("cmd_vel_mux/input/teleop",1000,&Callback);
     /**主循环**/
 
     ros::spin();
