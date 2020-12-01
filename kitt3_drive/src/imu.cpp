@@ -152,6 +152,11 @@ void IMU::explain_line()
                 for(int i =0;i<20;i++)
                 {
                     sum = sum + rx_buffer[i];
+                    if(rx_buffer[i] > 128)
+                    {
+                        rx_buffer[i] = rx_buffer[i] - 128;
+                        rx_buffer_signed[i] = -rx_buffer[i];
+                    }
                 }
                 //sum = sum + rx_header[0];
                 sum = 0xFF - sum
@@ -160,16 +165,16 @@ void IMU::explain_line()
 //                    printSerial(rx_buffer,30);
                     // 对字段进行解析
 
-                    acc_x = rx_buffer[0] + rx_buffer[1] * 256;
-                    acc_y = rx_buffer[2] + rx_buffer[3] * 256;
-                    acc_z = rx_buffer[4] + rx_buffer[5] * 256;
-                    groy_x  = rx_buffer[6] + rx_buffer[7] * 256;
-                    groy_y = rx_buffer[8] + rx_buffer[9] * 256;
-                    groy_z   = rx_buffer[10] + rx_buffer[11] * 256;
-                    roll  = rx_buffer[12] + rx_buffer[13] * 256;
-                    pitch = rx_buffer[14] + rx_buffer[15] * 256;
-                    yaw   = rx_buffer[16] + rx_buffer[17] * 256;
-                    temprature_imu = rx_buffer[18] + rx_buffer[19] * 256;
+                    acc_x = rx_buffer_signed[0] + rx_buffer_signed[1] * 256;
+                    acc_y = rx_buffer_signed[2] + rx_buffer_signed[3] * 256;
+                    acc_z = rx_buffer_signed[4] + rx_buffer_signed[5] * 256;
+                    groy_x  = rx_buffer_signed[6] + rx_buffer_signed[7] * 256;
+                    groy_y = rx_buffer_signed[8] + rx_buffer_signed[9] * 256;
+                    groy_z   = rx_buffer_signed[10] + rx_buffer_signed[11] * 256;
+                    roll  = rx_buffer_signed[12] + rx_buffer_signed[13] * 256;
+                    pitch = rx_buffer_signed[14] + rx_buffer_signed[15] * 256;
+                    yaw   = rx_buffer_signed[16] + rx_buffer_signed[17] * 256;
+                    temprature_imu = rx_buffer_signed[18] + rx_buffer_signed[19] * 256;
 
                     imuData.roll = roll * rate_scale / sensor_scale;
                     imuData.pitch = pitch * rate_scale / sensor_scale;

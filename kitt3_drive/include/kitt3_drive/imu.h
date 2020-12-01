@@ -32,8 +32,9 @@ public:
     // 串口读取buff
     //uint8_t rx_buffer[30];
     //uint8_t rx_header[1];
-    char rx_buffer[21];
-    char rx_header[1];
+    uint8_t rx_buffer[21];
+    uint8_t rx_header[1];
+    char rx_buffer_signed[21];
     float grav;
     float accel_scale = 20; 
     float rate_scale = 1260;
@@ -67,7 +68,7 @@ public:
      * @param data     串口数据buffer
      * @param len      buffer的长度
      */
-    void printSerial(uint8_t *data, int8 len);
+    void printSerial(int8 *data, int8 len);
     /**
      * @brief 将航向角清零
      *
