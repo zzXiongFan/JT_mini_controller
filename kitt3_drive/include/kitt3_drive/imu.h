@@ -25,15 +25,23 @@ public:
     serial::Serial imu_serial;
     // imu数据读取命令
     uint8_t tx_buffer[5];
+
     // 体加速度清零
     uint8_t zero_euler[5];
     uint8_t zero_euler_rx[6];
     // 串口读取buff
-    uint8_t rx_buffer[30];
-    uint8_t rx_header[1];
+    //uint8_t rx_buffer[30];
+    //uint8_t rx_header[1];
+    char rx_buffer[21];
+    char rx_header[1];
+    float grav;
+    float accel_scale = 20; 
+    float rate_scale = 1260;
+    float angle_scale = 360;
+    float sensor_scale = 65536;
     // 存储九轴数据
     int imu_buffer[54];
-
+    float temprature_imu;
 public:
 
     pthread_t pid_;

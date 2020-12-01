@@ -18,7 +18,7 @@ IMU::IMU()
     try
     {
         //初始化串口
-        imu_serial.setPort(IMU_DEV);
+        imu_serial.setPort(IMU_DEV);//"dev/ttyS0"
         // 设置波特率
         imu_serial.setBaudrate(IMU_PORT);
         // 设置打开超时时间
@@ -140,84 +140,46 @@ void IMU::explain_line()
         sum = 0x00;
         j = 0;
         // 串口发送读取命令
-        imu_serial.write(tx_buffer,5);
+        // imu_serial.write(tx_buffer,5);
         // 判断是否收到返回数据
         imu_serial.read(rx_header,1);
-        if(rx_header[0] == 0x68)
+        if(rx_header[0] == 0x7F)
         {
             imu_serial.read(rx_header,1);
-            if(rx_header[0] == 0x1F)
+            if(rx_header[0] == 0x80)
             {
-                imu_serial.read(rx_buffer,30);
-                for(int i =0;i<29;i++)
+                imu_serial.read(rx_buffer,21);
+                for(int i =0;i<20;i++)
                 {
                     sum = sum + rx_buffer[i];
                 }
-                sum = sum + rx_header[0];
-                if(sum == rx_buffer[29])
+                //sum = sum + rx_header[0];
+                sum = 0xFF - sum
+                if(sum == rx_buffer[20])
                 {
 //                    printSerial(rx_buffer,30);
                     // 对字段进行解析
-                    for(int i=0;i<27;i++)
-                    {
-                        j = 2 * i;
-                        imu_buffer[j] = (rx_buffer[2+i] >> 4) - 0x00;
-                        imu_buffer[j+1] = (rx_buffer[2+i] & 0x0f) - 0x00;
-                    }
-                    roll = imu_buffer[1] * 100 + imu_buffer[2] * 10 + imu_buffer[3] + imu_buffer[4] * 0.1 + imu_buffer[5] * 0.01;
-                    if(imu_buffer[0] == 1)
-                    {
-                        roll = - roll;
-                    }
-                    pitch = imu_buffer[7] * 100 + imu_buffer[8] * 10 + imu_buffer[9] + imu_buffer[10] * 0.1 + imu_buffer[11] * 0.01;
-                    if(imu_buffer[6] == 1)
-                    {
-                        pitch = - pitch;
-                    }
-                    yaw = imu_buffer[13] * 100 + imu_buffer[14] * 10 + imu_buffer[15] + imu_buffer[16] * 0.1 + imu_buffer[17] * 0.01;
-                    if(imu_buffer[12] == 1)
-                    {
-                        yaw = - yaw;
-                    }
-                    acc_x = imu_buffer[19] * 10 + imu_buffer[20] + imu_buffer[21] * 0.1 + imu_buffer[22] * 0.01 + imu_buffer[23] * 0.001;
-                    if(imu_buffer[18] == 1)
-                    {
-                        acc_x = - acc_x;
-                    }
-                    acc_y = imu_buffer[25] * 10 + imu_buffer[26] + imu_buffer[27] * 0.1 + imu_buffer[28] * 0.01 + imu_buffer[29] * 0.001;
-                    if(imu_buffer[24] == 1)
-                    {
-                        acc_y = - acc_y;
-                    }
-                    acc_z = imu_buffer[31] * 10 + imu_buffer[32] + imu_buffer[33] * 0.1 + imu_buffer[34] * 0.01 + imu_buffer[35] * 0.001;
-                    if(imu_buffer[30] == 1)
-                    {
-                        acc_z = - acc_z;
-                    }
-                    groy_x = imu_buffer[37] * 100 + imu_buffer[38] * 10 + imu_buffer[39] + imu_buffer[40] * 0.1 + imu_buffer[41] * 0.01;
-                    if(imu_buffer[36] == 1)
-                    {
-                        groy_x = - groy_x;
-                    }
-                    groy_y = imu_buffer[43] * 100 + imu_buffer[44] * 10 + imu_buffer[45] + imu_buffer[46] * 0.1 + imu_buffer[47] * 0.01;
-                    if(imu_buffer[42] == 1)
-                    {
-                        groy_y = - groy_y;
-                    }
-                    groy_z = imu_buffer[49] * 100 + imu_buffer[50] * 10 + imu_buffer[51] + imu_buffer[52] * 0.1 + imu_buffer[53] * 0.01;
-                    if(imu_buffer[48] == 1)
-                    {
-                        groy_z = - groy_z;
-                    }
-                    imuData.roll = roll * PI / 180.0;
-                    imuData.pitch = pitch * PI / 180.0;
-                    imuData.yaw = yaw * PI / 180.0;
-                    imuData.acc_x = acc_x * 9.8;
-                    imuData.acc_y = acc_y * 9.8;
-                    imuData.acc_z = acc_z * 9.8;
-                    imuData.angular_x = groy_x * PI / 180.0;
-                    imuData.angular_y = groy_y * PI / 180.0;
-                    imuData.angular_z = groy_z * PI / 180.0;
+
+                    acc_x = rx_buffer[0] + rx_buffer[1] * 256;
+                    acc_y = rx_buffer[2] + rx_buffer[3] * 256;
+                    acc_z = rx_buffer[4] + rx_buffer[5] * 256;
+                    groy_x  = rx_buffer[6] + rx_buffer[7] * 256;
+                    groy_y = rx_buffer[8] + rx_buffer[9] * 256;
+                    groy_z   = rx_buffer[10] + rx_buffer[11] * 256;
+                    roll  = rx_buffer[12] + rx_buffer[13] * 256;
+                    pitch = rx_buffer[14] + rx_buffer[15] * 256;
+                    yaw   = rx_buffer[16] + rx_buffer[17] * 256;
+                    temprature_imu = rx_buffer[18] + rx_buffer[19] * 256;
+
+                    imuData.roll = roll * rate_scale / sensor_scale;
+                    imuData.pitch = pitch * rate_scale / sensor_scale;
+                    imuData.yaw = yaw * rate_scale / sensor_scale;
+                    imuData.acc_x = acc_x * 9.8 * accel_scale / sensor_scale;
+                    imuData.acc_y = acc_y * 9.8 * accel_scale / sensor_scale;
+                    imuData.acc_z = acc_z * 9.8 * accel_scale / sensor_scale;
+                    imuData.angular_x = groy_x  * angle_scale / sensor_scale;
+                    imuData.angular_y = groy_y  * angle_scale / sensor_scale;
+                    imuData.angular_z = groy_z  * angle_scale / sensor_scale;
 		   // cout<<imuData.yaw *180/PI<<endl;
                     //cout<<imuData.roll<<" "<<imuData.pitch<<" "<<imuData.yaw *180/PI<<" "<<imuData.acc_x<<" "<<imuData.acc_y<<" "<<imuData.acc_z<<" "<<imuData.angular_x<<" "<<imuData.angular_y<<" "<<imuData.angular_z<<endl;
                 }
