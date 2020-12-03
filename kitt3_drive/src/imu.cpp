@@ -3,7 +3,7 @@
 IMU::IMU()
 {
     isOpened = false;
-
+    cout<<"This is IMU!!!!!!!"<<endl;
     // imuData初始化
     imuData.acc_x = 0;
     imuData.acc_y = 0;
@@ -18,14 +18,17 @@ IMU::IMU()
     try
     {
         //初始化串口
-        imu_serial.setPort(IMU_DEV);//"dev/ttyS0"
+        imu_serial.setPort("dev/ttyTHS2");//"dev/ttyTHS2"
         // 设置波特率
         imu_serial.setBaudrate(IMU_PORT);
         // 设置打开超时时间
         serial::Timeout to0 = serial::Timeout::simpleTimeout(3000);
         imu_serial.setTimeout(to0);
+        imu_serial.setBytesize(serial::bytesize_t::eightbits);
+        imu_serial.setStopbits(serial::stopbits_t::stopbits_one);
+        imu_serial.setParity(serial::parity_t::parity_none);
         imu_serial.open();
-
+        cout<<"try to open"<<endl;
         if(imu_serial.isOpen())
         {
             isOpened = true;
@@ -64,6 +67,7 @@ IMU::IMU()
                     if(ret == 0)
                     {
                         cout<<"Create Imu pthread successfully!"<<endl;
+                        cout<<"Create Imu pthread successfully!!!!!!!!!!!!!!??"<<endl;
                     }
                     break;
 
@@ -96,6 +100,7 @@ int IMU::start()
 {
     if(pthread_create(&pid_,NULL,start_thread,(void *)this) != 0) //´创建一个线程(必须是全局函数)
     {
+        cout<<"Create  pthread successfully!!!!!!!!!!!!!!!!!!!!!"<<endl;
         return -1;
     }
     return 0;
@@ -139,6 +144,7 @@ void IMU::explain_line()
 
         sum = 0x00;
         j = 0;
+        cout<<"isopend!"<<endl;
         // 串口发送读取命令
         // imu_serial.write(tx_buffer,5);
         // 判断是否收到返回数据
@@ -149,6 +155,7 @@ void IMU::explain_line()
             if(rx_header[0] == 0x80)
             {
                 imu_serial.read(rx_buffer,21);
+                cout<<"read data!"<<endl;
                 for(int i =0;i<20;i++)
                 {
                     sum = sum + rx_buffer[i];
@@ -164,7 +171,7 @@ void IMU::explain_line()
                 {
 //                    printSerial(rx_buffer,30);
                     // 对字段进行解析
-
+                    cout<<"data explain!"<<endl;
                     acc_x = rx_buffer_signed[0] + rx_buffer_signed[1] * 256;
                     acc_y = rx_buffer_signed[2] + rx_buffer_signed[3] * 256;
                     acc_z = rx_buffer_signed[4] + rx_buffer_signed[5] * 256;

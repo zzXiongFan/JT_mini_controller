@@ -9,13 +9,15 @@
 #include <can_bus.h>
 #include <imu.h>
 
+
+IMU imu;
 //InfraredSerial infrared_serial;
 canbus bus("can0");
 
-IMU imu;
 
 int main(int argc,char** argv)
 {
+    //IMU imu;
     ros::init(argc,argv,"mobile_base");
     ros::NodeHandle nh;
     ros::Rate loop_rate(100);
@@ -29,7 +31,8 @@ int main(int argc,char** argv)
     //ros::Publisher electic_pub = nh.advertise<std_msgs::Int16MultiArray>("/electic_topic",100);
     /**发布imu数据**/
     ros::Publisher imu_pub = nh.advertise<sensor_msgs::Imu>("/imu_data",100);
-
+    //imu.start();
+    ROS_INFO("IMU start");
     int resp = bus.start();
     
     /**主循环**/
@@ -41,7 +44,6 @@ int main(int argc,char** argv)
         //encoder_msgs.data.push_back(infrared_serial.information.left_encoder);
         //encoder_msgs.data.push_back(infrared_serial.information.right_encoder);
         //encoder_pub.publish(encoder_msgs);
-        
         std_msgs::Float32 power_msgs;
         power_msgs.data = bus.information.power;
         power_pub.publish(power_msgs);
